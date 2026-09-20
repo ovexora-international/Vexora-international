@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advertising Board — Vexora International</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="logo">Vexora <span>Intl.</span></div>
+    <div class="tagline">Earning Platform</div>
+
+    <a class="nav-item" href="dashboard.html"><span class="icon">🏠</span><span class="label">Dashboard</span></a>
+    <a class="nav-item active" href="advertising.html"><span class="icon">📢</span><span class="label">Advertising Board</span></a>
+
+    <div class="nav-group-label">Earn Money</div>
+    <a class="nav-item" href="earn-ptc.html"><span class="icon">🎬</span><span class="label">PTC Ads</span></a>
+    <a class="nav-item" href="earn-faucet.html"><span class="icon">💧</span><span class="label">Faucet</span></a>
+    <a class="nav-item" href="earn-shortlinks.html"><span class="icon">🔗</span><span class="label">Shortlinks</span></a>
+    <a class="nav-item" href="earn-offerwalls.html"><span class="icon">🎁</span><span class="label">Offerwalls</span></a>
+
+    <div class="nav-group-label">Account</div>
+    <a class="nav-item" href="withdraw.html"><span class="icon">💳</span><span class="label">Withdraw</span></a>
+    <a class="nav-item" href="transactions.html"><span class="icon">📄</span><span class="label">Transactions</span></a>
+
+    <div class="sidebar-footer">
+      <a class="nav-item" href="#" onclick="clearSession(); window.location.href='index.html';">
+        <span class="icon">🚪</span><span class="label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <div>
+    <div class="topbar">
+      <h2>Advertising Board</h2>
+      <div style="display:flex; align-items:center; gap:20px;">
+        <div class="balance-pill">
+          <div>
+            <div class="label">Balance</div>
+            <div class="amount" id="balance-amount">0 Token</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+
+      <div class="grid grid-2">
+
+        <!-- STEP 1: PAYMENT -->
+        <div class="card">
+          <h3 style="margin-bottom:6px;">Step 1 — Payment Bhejein</h3>
+          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:20px;">
+            Ad chalane ke liye pehle FaucetPay ya Crypto wallet se payment bhejein.
+            Payment record submit karne ke baad admin approval ka intezaar karein.
+          </p>
+
+          <div class="field">
+            <label>Payment Method</label>
+            <select id="pay-method">
+              <option value="faucetpay">FaucetPay</option>
+              <option value="crypto">Crypto Wallet</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Amount (USD)</label>
+            <input type="number" id="pay-amount" placeholder="jaise 10">
+          </div>
+
+          <div class="field">
+            <label>Transaction Reference / Hash</label>
+            <input type="text" id="pay-reference" placeholder="TXID ya reference paste karein">
+          </div>
+
+          <div class="ip-note" style="margin-bottom:16px;">
+            <span class="dot"></span>
+            FaucetPay ID: <b>vexora@faucetpay.io</b> &nbsp;|&nbsp; USDT (TRC20): <b>TXXXXXXXXXXXXXXXXXXX</b>
+          </div>
+
+          <button class="btn btn-gold btn-block" onclick="submitPayment()">Payment Record Submit Karein</button>
+          <div id="payment-msg" style="margin-top:12px; font-size:0.85rem;"></div>
+        </div>
+
+        <!-- STEP 2: CREATE AD -->
+        <div class="card">
+          <h3 style="margin-bottom:6px;">Step 2 — PTC Ad Banayein</h3>
+          <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:20px;">
+            Approval milne ke baad yahan se apna ad submit karein. Duration ke hisab se price alag hoti hai.
+          </p>
+
+          <div class="field">
+            <label>Ad Title</label>
+            <input type="text" id="ad-title" placeholder="jaise: Visit my website">
+          </div>
+
+          <div class="field">
+            <label>Target URL</label>
+            <input type="text" id="ad-url" placeholder="https://...">
+          </div>
+
+          <div class="field">
+            <label>Duration</label>
+            <select id="ad-duration" onchange="updatePrice()">
+              <option value="5">5 seconds — User ko 20 Token milte hain</option>
+              <option value="10">10 seconds — User ko 30 Token milte hain</option>
+              <option value="30">30 seconds — User ko 50 Token milte hain</option>
+              <option value="60">60 seconds — User ko 75 Token milte hain</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Total Views Chahiye</label>
+            <input type="number" id="ad-views" placeholder="jaise 1000" oninput="updatePrice()">
+          </div>
+
+          <div class="card" style="background:var(--surface-2); margin-bottom:18px;">
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:var(--text-dim);">User reward per view</span>
+              <span id="price-per-view" class="price-tag">20 Token</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+              <span style="color:var(--text-dim);">Total Cost (aapko pay karna hai)</span>
+              <span id="total-cost" class="price-tag">0.00000 USDT</span>
+            </div>
+          </div>
+
+          <button class="btn btn-teal btn-block" onclick="submitAd()">Ad Submit Karein</button>
+          <div id="ad-msg" style="margin-top:12px; font-size:0.85rem;"></div>
+        </div>
+
+      </div>
+
+      <div class="section-head">
+        <h2>Meri Payment History</h2>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+          <tbody id="payment-history">
+            <tr><td colspan="4" style="color:var(--text-dim);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+  const user = requireLogin();
+  // Duration -> user ko milne wale fixed tokens (backend ke Code.gs se match)
+  const rewardTokenMap = { "5": 20, "10": 30, "30": 50, "60": 75 };
+  // Advertiser ki cost = user reward tokens ko USDT mein convert karke,
+  // platform margin (30%) add kar dena — yani advertiser thora zyada pay karta hai
+  // taake platform ka margin bhi nikal sake.
+  const PLATFORM_MARGIN = 1.3;
+
+  if (user) {
+    apiGet('getUser', { email: user.email }).then(res => {
+      if (res.success) {
+        document.getElementById('balance-amount').innerText = formatTokens(res.user.Balance || 0);
+      }
+    });
+    loadPaymentHistory();
+  }
+
+  function updatePrice() {
+    const duration = document.getElementById('ad-duration').value;
+    const views = Number(document.getElementById('ad-views').value || 0);
+    const rewardTokens = rewardTokenMap[duration];
+    const costPerViewUSDT = tokensToUSDT(rewardTokens) * PLATFORM_MARGIN;
+    document.getElementById('price-per-view').innerText = formatTokens(rewardTokens);
+    document.getElementById('total-cost').innerText = (costPerViewUSDT * views).toFixed(5) + ' USDT';
+  }
+
+  async function submitPayment() {
+    const amount = document.getElementById('pay-amount').value;
+    const method = document.getElementById('pay-method').value;
+    const reference = document.getElementById('pay-reference').value;
+    const msg = document.getElementById('payment-msg');
+
+    if (!amount || !reference) {
+      msg.style.color = 'var(--danger)';
+      msg.innerText = 'Amount aur reference dono zaroori hain.';
+      return;
+    }
+
+    msg.style.color = 'var(--text-dim)';
+    msg.innerText = 'Submit ho raha hai...';
+
+    const res = await apiPost('depositFunds', { userId: user.userId, amount, method, reference });
+    if (res.success) {
+      msg.style.color = 'var(--success)';
+      msg.innerText = res.message;
+      loadPaymentHistory();
+    } else {
+      msg.style.color = 'var(--danger)';
+      msg.innerText = res.error || 'Kuch masla hua.';
+    }
+  }
+
+  async function submitAd() {
+    const title = document.getElementById('ad-title').value;
+    const targetUrl = document.getElementById('ad-url').value;
+    const duration = document.getElementById('ad-duration').value;
+    const totalViews = document.getElementById('ad-views').value;
+    const msg = document.getElementById('ad-msg');
+
+    if (!title || !targetUrl || !totalViews) {
+      msg.style.color = 'var(--danger)';
+      msg.innerText = 'Sab fields bharein.';
+      return;
+    }
+
+    msg.style.color = 'var(--text-dim)';
+    msg.innerText = 'Submit ho raha hai...';
+
+    const res = await apiPost('submitAd', {
+      userId: user.userId,
+      email: user.email,
+      title, targetUrl, duration,
+      pricePerView: rewardTokenMap[duration],
+      totalViews
+    });
+
+    if (res.success) {
+      msg.style.color = 'var(--success)';
+      msg.innerText = res.message;
+    } else {
+      msg.style.color = 'var(--danger)';
+      msg.innerText = res.error;
+    }
+  }
+
+  async function loadPaymentHistory() {
+    const res = await apiGet('getTransactions', { userId: user.userId });
+    const tbody = document.getElementById('payment-history');
+    if (res.success && res.transactions.filter(t => t.Type === 'deposit').length) {
+      tbody.innerHTML = res.transactions.filter(t => t.Type === 'deposit').map(t => `
+        <tr>
+          <td>${new Date(t.Timestamp).toLocaleDateString()}</td>
+          <td>${Number(t.Amount).toFixed(5)} USDT</td>
+          <td>${t.Method}</td>
+          <td><span class="status-pill status-${t.Status.toLowerCase()}">${t.Status}</span></td>
+        </tr>
+      `).join('');
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-dim);">Abhi tak koi payment nahi.</td></tr>';
+    }
+  }
+
+  updatePrice();
+</script>
+
+</body>
+</html>
