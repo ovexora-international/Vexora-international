@@ -16,7 +16,7 @@
  **************************************************************/
 
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxtVZWi47TRHbq8UmDuJZCJE9pSP-VBbNy5RWFJvxywJG9qNgId34jPpLXzdTV0ocBqCg/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbw-Ar-xX5yBpqCcuautTMJC1QJUCgMlpzOMre_QGQ5B4ckj_eqgqus4AAYQXy7PypCvtw/exec",
   GOOGLE_CLIENT_ID: "28032329800-cbomi45s0ioea9mfoqsq6rlk802gqg59.apps.googleusercontent.com",
   HCAPTCHA_SITE_KEY: "PASTE_YOUR_HCAPTCHA_SITE_KEY_HERE",
   SITE_NAME: "Vexora International",
