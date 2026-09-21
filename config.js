@@ -3,7 +3,7 @@
  * ------------------------------------------------------------
  * YAHAN APNI DO CHEEZEIN DAALEIN:
  *
- * 1) API_URL:
+ * 1) API_URL:https://script.google.com/macros/s/AKfycbyLtlTV4OeUm7uHdNmv_7ZIzVjh4eFT9epyGXrrtlMcBtD-VCPOAegLZLqLqY-2YBMn0A/exec
  *    Apps Script "Deploy > New deployment > Web app" karne ke baad
  *    jo URL milta hai (.../exec se khatam hota hai), wo yahan paste karein.
  *
@@ -16,7 +16,7 @@
  **************************************************************/
 
 const CONFIG = {
-  API_URL: "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE",
+  API_URL: "https://script.google.com/macros/s/AKfycbyLtlTV4OeUm7uHdNmv_7ZIzVjh4eFT9epyGXrrtlMcBtD-VCPOAegLZLqLqY-2YBMn0A/exec",
   GOOGLE_CLIENT_ID: "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE",
   HCAPTCHA_SITE_KEY: "PASTE_YOUR_HCAPTCHA_SITE_KEY_HERE",
   SITE_NAME: "Vexora International",
