@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw — Vexora International</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SLIDE-OUT DRAWER MENU -->
+  <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-close" onclick="toggleMenu()">✕</div>
+    <div class="logo">Vexora <span>Intl.</span></div>
+    <div class="tagline">Earning Platform</div>
+
+    <a class="nav-item" href="dashboard.html"><span class="icon">🏠</span><span class="label">Dashboard</span></a>
+    <a class="nav-item" href="advertising.html"><span class="icon">📢</span><span class="label">Advertising Board</span></a>
+
+    <div class="nav-group-label">Earn Money</div>
+    <a class="nav-item" href="earn-ptc.html"><span class="icon">🎬</span><span class="label">PTC Ads</span></a>
+    <a class="nav-item" href="earn-faucet.html"><span class="icon">💧</span><span class="label">Faucet</span></a>
+    <a class="nav-item" href="earn-shortlinks.html"><span class="icon">🔗</span><span class="label">Shortlinks</span></a>
+    <a class="nav-item" href="earn-offerwalls.html"><span class="icon">🎁</span><span class="label">Offerwalls</span></a>
+
+    <div class="nav-group-label">Account</div>
+    <a class="nav-item active" href="withdraw.html"><span class="icon">💳</span><span class="label">Withdraw</span></a>
+    <a class="nav-item" href="transactions.html"><span class="icon">📄</span><span class="label">Transactions</span></a>
+
+    <div class="drawer-footer">
+      <a class="nav-item" href="#" onclick="clearSession(); window.location.href='index.html';">
+        <span class="icon">🚪</span><span class="label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <div class="top-nav-left">
+      <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+      <div class="logo">Vexora <span>Intl.</span></div>
+    </div>
+    <div class="balance-pill">
+      <div>
+        <div class="label">Balance</div>
+        <div class="amount" id="balance-amount">0 Token</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:6px;">Withdrawal Request</h3>
+          <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:20px;">
+            Payout <b>FaucetPay</b> ke zariye <b>LTC (Litecoin)</b> mein bheja jayega.
+          </p>
+
+          <div class="field">
+            <label>Amount (Token)</label>
+            <input type="number" id="wd-amount" placeholder="minimum 50,000 Token" oninput="updateConversion()">
+          </div>
+
+          <div class="card" style="background:var(--surface-2); margin-bottom:18px; padding:16px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+              <span style="color:var(--text-dim);">Conversion Rate</span>
+              <span>1,00,000 Token = 1 USDT</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+              <span style="color:var(--text-dim);">Aapko milega (approx.)</span>
+              <span class="price-tag" id="usdt-preview">0.00000 USDT</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>FaucetPay Email</label>
+            <input type="text" id="wd-address" placeholder="apna FaucetPay account email daalein">
+          </div>
+
+          <button class="btn btn-gold btn-block" onclick="submitWithdraw()">Withdraw Request Bhejein</button>
+          <div id="wd-msg" style="margin-top:12px; font-size:0.85rem;"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:12px;">Rules</h3>
+          <ul style="color:var(--text-dim); font-size:0.9rem; line-height:2; padding-left:18px;">
+            <li>Minimum withdrawal: <b>50,000 Token</b></li>
+            <li>Payout method: FaucetPay → LTC</li>
+            <li>Conversion: 1,00,000 Token = 1 USDT</li>
+            <li>Processing time: 24–48 ghantay</li>
+            <li>Multiple IP se ek user ka access fraud samjha jayega</li>
+            <li>Galat FaucetPay email ki zimmedari user par hogi</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-head"><h2>Withdrawal History</h2></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Date</th><th>Token</th><th>USDT Value</th><th>Method</th><th>Status</th></tr></thead>
+          <tbody id="wd-history"><tr><td colspan="5" style="color:var(--text-dim);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+  const user = requireLogin();
+  const MIN_WITHDRAW = 50000;
+
+  if (user) {
+    refreshBalance();
+    loadHistory();
+  }
+
+  function refreshBalance() {
+    apiGet('getUser', { email: user.email }).then(res => {
+      if (res.success) document.getElementById('balance-amount').innerText = formatTokens(res.user.Balance || 0);
+    });
+  }
+
+  function updateConversion() {
+    const tokens = Number(document.getElementById('wd-amount').value || 0);
+    document.getElementById('usdt-preview').innerText = tokensToUSDT(tokens).toFixed(5) + ' USDT';
+  }
+
+  async function submitWithdraw() {
+    const amount = document.getElementById('wd-amount').value;
+    const walletAddress = document.getElementById('wd-address').value;
+    const msg = document.getElementById('wd-msg');
+
+    if (!amount || Number(amount) < MIN_WITHDRAW || !walletAddress) {
+      msg.style.color = 'var(--danger)';
+      msg.innerText = 'Minimum ' + formatTokens(MIN_WITHDRAW) + ' aur FaucetPay email zaroori hai.';
+      return;
+    }
+
+    msg.style.color = 'var(--text-dim)';
+    msg.innerText = 'Submit ho raha hai...';
+
+    const res = await apiPost('requestWithdraw', { userId: user.userId, amount, method: 'faucetpay_ltc', walletAddress });
+    if (res.success) {
+      msg.style.color = 'var(--success)';
+      msg.innerText = res.message;
+      refreshBalance();
+      loadHistory();
+    } else {
+      msg.style.color = 'var(--danger)';
+      msg.innerText = res.error;
+    }
+  }
+
+  async function loadHistory() {
+    const res = await apiGet('getWithdrawals', { userId: user.userId });
+    const tbody = document.getElementById('wd-history');
+    if (res.success && res.withdrawals.length) {
+      tbody.innerHTML = res.withdrawals.map(w => `
+        <tr>
+          <td>${new Date(w.RequestedAt).toLocaleDateString()}</td>
+          <td>${formatTokens(w.TokenAmount)}</td>
+          <td>${Number(w.USDTValue || 0).toFixed(5)} USDT</td>
+          <td>${w.Method}</td>
+          <td><span class="status-pill status-${String(w.Status).toLowerCase()}">${w.Status}</span></td>
+        </tr>
+      `).join('');
+    } else {
+      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-dim);">Abhi tak koi withdrawal nahi.</td></tr>';
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offerwalls — Vexora International</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SLIDE-OUT DRAWER MENU -->
+  <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-close" onclick="toggleMenu()">✕</div>
+    <div class="logo">Vexora <span>Intl.</span></div>
+    <div class="tagline">Earning Platform</div>
+
+    <a class="nav-item" href="dashboard.html"><span class="icon">🏠</span><span class="label">Dashboard</span></a>
+    <a class="nav-item" href="advertising.html"><span class="icon">📢</span><span class="label">Advertising Board</span></a>
+
+    <div class="nav-group-label">Earn Money</div>
+    <a class="nav-item" href="earn-ptc.html"><span class="icon">🎬</span><span class="label">PTC Ads</span></a>
+    <a class="nav-item" href="earn-faucet.html"><span class="icon">💧</span><span class="label">Faucet</span></a>
+    <a class="nav-item" href="earn-shortlinks.html"><span class="icon">🔗</span><span class="label">Shortlinks</span></a>
+    <a class="nav-item active" href="earn-offerwalls.html"><span class="icon">🎁</span><span class="label">Offerwalls</span></a>
+
+    <div class="nav-group-label">Account</div>
+    <a class="nav-item" href="withdraw.html"><span class="icon">💳</span><span class="label">Withdraw</span></a>
+    <a class="nav-item" href="transactions.html"><span class="icon">📄</span><span class="label">Transactions</span></a>
+
+    <div class="drawer-footer">
+      <a class="nav-item" href="#" onclick="clearSession(); window.location.href='index.html';">
+        <span class="icon">🚪</span><span class="label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <div class="top-nav-left">
+      <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+      <div class="logo">Vexora <span>Intl.</span></div>
+    </div>
+    <div class="balance-pill">
+      <div>
+        <div class="label">Balance</div>
+        <div class="amount" id="balance-amount">0 Token</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <p style="color:var(--text-dim); margin-bottom:24px;">
+      Complete app installs, surveys, or tasks on our offerwall partners to earn bigger rewards.
+      Rewards are credited automatically once the provider confirms task completion.
+    </p>
+
+    <div class="grid grid-3" id="walls-container">
+      <div class="card" style="grid-column:1/-1; text-align:center; color:var(--text-dim);">Loading offerwalls...</div>
+    </div>
+
+    <div id="wall-frame-wrap" style="display:none; margin-top:24px;">
+      <div class="section-head" style="margin-top:0;">
+        <h2 id="wall-frame-title">Offerwall</h2>
+        <button class="btn btn-outline" onclick="closeWall()">Close ✕</button>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <iframe id="wall-frame" style="width:100%; height:640px; border:0;"></iframe>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+  const user = requireLogin();
+
+  if (user) {
+    apiGet('getUser', { email: user.email }).then(res => {
+      if (res.success) document.getElementById('balance-amount').innerText = formatTokens(res.user.Balance || 0);
+    });
+    loadWalls();
+  }
+
+  async function loadWalls() {
+    const res = await apiGet('getOfferwalls');
+    const container = document.getElementById('walls-container');
+    if (res.success && res.offerwalls.length) {
+      container.innerHTML = res.offerwalls.map(w => `
+        <div class="earn-tile">
+          <div class="tile-icon">🎁</div>
+          <h3>${w.ProviderName}</h3>
+          <p>Complete tasks and receive rewards automatically.</p>
+          <button class="btn btn-gold btn-block" onclick='openWall(${JSON.stringify(w)})'>Open</button>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '<div class="card" style="grid-column:1/-1; text-align:center; color:var(--text-dim);">No offerwalls configured yet. Add a provider in the "Offerwalls" sheet.</div>';
+    }
+  }
+
+  function openWall(wall) {
+    // Append the user's Vexora UserID as sub_id so Bitcotask's postback
+    // (and other offerwall providers) can credit the correct account.
+    let url = wall.IframeURL;
+    const separator = url.includes('?') ? '&' : '?';
+    url += separator + 'sub_id=' + encodeURIComponent(user.userId);
+
+    document.getElementById('wall-frame-title').innerText = wall.ProviderName;
+    document.getElementById('wall-frame').src = url;
+    document.getElementById('wall-frame-wrap').style.display = 'block';
+    document.getElementById('wall-frame-wrap').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function closeWall() {
+    document.getElementById('wall-frame').src = '';
+    document.getElementById('wall-frame-wrap').style.display = 'none';
+    // Refresh balance in case reward was credited via postback while the wall was open
+    apiGet('getUser', { email: user.email }).then(res => {
+      if (res.success) document.getElementById('balance-amount').innerText = formatTokens(res.user.Balance || 0);
+    });
+  }
+</script>
+
+</body>
+</html>
