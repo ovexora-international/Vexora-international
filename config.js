@@ -11,7 +11,7 @@
  **************************************************************/
 
 const CONFIG = {
-  API_URL: "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE",
+  API_URL: "https://script.google.com/macros/s/AKfycbyqVqgiU_zlwr7cFi8BzuEaiDFUugubkenG_KsKcedBh3UbdpRJii5HjVecMpEMMudHag/exec",
   GOOGLE_CLIENT_ID: "28032329800-cbomi45s0ioea9mfoqsq6rlk802gqg59.apps.googleusercontent.com",
   HCAPTCHA_SITE_KEY: "49de5aea-4cc0-4d06-93e4-aef6ab0c9a7e",
   SITE_NAME: "Vexora International",
