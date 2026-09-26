@@ -12,7 +12,7 @@
 
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbxBhPX3efkISli9hte4CtsgyR9zgBbIQrEdBlG4elcbKG53bLMY6t9IuUW__u5tiswOVw/exec",
-  GOOGLE_CLIENT_ID:"28032329800-cbomi45s0ioea9mfoqsq6rlk802gqg59.apps.googleusercontent.com",
+  GOOGLE_CLIENT_ID:"",
   HCAPTCHA_SITE_KEY: "49de5aea-4cc0-4d06-93e4-aef6ab0c9a7e",
   SITE_NAME: "Vexora International",
   CURRENCY_SYMBOL: "",
